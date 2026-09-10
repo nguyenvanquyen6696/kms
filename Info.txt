@@ -1,0 +1,6 @@
+Viec su dung Script nay la de tu dong Gia han Kich hoat Windows va Office cua ban.
+Ban co the xem tac vu duoc len lich cua no trong "Task Scheduler"
+
+Day la file Kich hoat Windows va Office nhe nhat cung nhu Hoan toan Sach 100%.
+
+De biet them thong tin Cap nhat ve Script vui long lien he: https://www.facebook.com/HoiQuanCongNgheTinHoc
