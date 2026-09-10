@@ -19,12 +19,4 @@ foreach ($n in $paths.Keys) {
 Write-Host "== AV dang cai:" -ForegroundColor Cyan
 Get-CimInstance -Namespace root\SecurityCenter2 -ClassName AntiVirusProduct | Select-Object -Expand displayName
 Write-Host "== Trang thai Defender:" -ForegroundColor Cyan
-Get-MpComputerStatus | Format-List AMServiceEnabled,RealTimeProtectionEnabled,AntivirusEnabled,IsTamperProtected,AMRunningModereg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "ProviderID"
-reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "EnrollmentState"
-reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "UPN"
-
-dsregcmd /status | Select-String "AzureAdJoined|DomainJoined|TenantName|TenantId|MDMUrl|WorkplaceJoined"
-
-# Policy MDM áp lên Defender nằm ở đây:
-reg query "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Defender" /s
-reg query "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\WindowsDefenderSecurityCenter" /s
+Get-MpComputerStatus | Format-List AMServiceEnabled,RealTimeProtectionEnabled,AntivirusEnabled,IsTamperProtected,AMRunningMode
