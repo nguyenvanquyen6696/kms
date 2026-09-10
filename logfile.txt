@@ -1,5 +1,3 @@
-Máy bạn đang bị chính sách (policy) quản trị khóa Windows Security. Việc reset bằng Cloud Download mà vẫn còn nghĩa là policy được áp lại tự động sau khi cài — có 4 nguồn có thể, xếp theo khả năng cao → thấp.
-
 Bước 1 — Chẩn đoán (chạy trên máy bị lỗi)
 
 Mở PowerShell với quyền Administrator (Win + X → Terminal (Admin)) rồi chạy từng lệnh:
@@ -22,44 +20,3 @@ dir C:\Recovery\Customizations, C:\Windows\Provisioning\Packages
 Get-CimInstance -Namespace root\SecurityCenter2 -ClassName AntiVirusProduct | Select displayName
 
 Gửi lại kết quả cho tôi nếu bạn không chắc đọc thế nào.
-
-Bước 2 — Xử lý theo từng nguyên nhân
-
-A. Nếu AzureAdJoined : YES hoặc có TenantName là tên một công ty
-→ Đây là laptop thanh lý từ doanh nghiệp và vẫn nằm trong Windows Autopilot / Intune của họ. Mỗi lần reset, máy tự đăng ký lại vào tenant đó và policy được áp lại. Bạn không thể tự gỡ — chỉ IT của công ty sở hữu mới xóa được device khỏi Autopilot.
-→ Cách duy nhất: liên hệ người bán, yêu cầu họ xóa máy khỏi Autopilot/Intune, hoặc trả máy đòi tiền. Đây là lỗi của người bán, không phải lỗi Windows.
-→ Tạm thời có thể vào Settings → Accounts → nnect, nhưng nếu là Autopilot thì reset lầnsau sẽ bị lại.
-
-B. Nếu chỉ có key registry policy (mục 3 có kết quả)
-Sao lưu rồi xóa:
-
-reg export "HKLM\SOFTWARE\Policies\Microsoft" "$env:USERPROFILE\Desktop\backup-policy.reg" /y
-
-reg delete "HKLM\SOFTWARE\Policies\Microsoft
-reg delete "HKLM\SOFTWARE\Microsoft\Windows Defender\Policy Manager" /f
-reg delete "HKLM\SOFTWARE\Policies\Microsoftnter" /f
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v DisableWindowsSecurity /f
-
-gpupdate /force
-Khởi động lại máy.
-
-C. Nếu có file .ppkg ở C:\Recovery\Customiza
-Đây là gói cấu hình OEM/người bán nhét vào, nó tự chạy lại mỗi lần reset. Xóa file .ppkg trong thư mục đó, rồi làm lại bước B.
-
-D. Nếu mục 5 hiện tên AV lạ (McAfee, Avast, 360, Kaspersky…)
-Gỡ nó trong Settings → Apps, Defender sẽ tự bật lại.
-
-Bước 3 — Nếu vẫn không hết: cài sạch bằng USB
-
-Cloud Reset giữ lại phân vùng Recovery và các gói tùy biến OEM, nên không sạch triệt để. Làm thế này:
-
-1. Tải Media Creation Tool từ microsoft.com/software-download/windows11, tạo USB cài đặt.
-2. Boot từ USB → Custom install → Xóa TOÀN BỘ partition trên ổ đĩa (kể cả Recovery, EFI, OEM) → cài mới trên vùng trống.
-3. Ở màn hình OOBE, chọn "Set up for personal use", dùng tài khoản Microsoft cá nhân của bạn — không dùng tài khoản
-   công ty/trường.
-
-Nếu sau khi cài sạch từ USB mà OOBE vẫn hiện công ty → chắc chắn là trường hợp A(Autopilot), và bạn cần đòi người bán xử lý.
-
----
-
-Một lưu ý thêm: bản Home Single Language khôo tác phải làm qua registry như trên. Bạn cứchạy Bước 1 rồi dán kết quả vào đây, tôi sẽ chỉ chính xác bạn rơi vào trường hợp nào.
