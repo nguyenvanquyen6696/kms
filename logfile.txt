@@ -1,3 +1,7 @@
-Get-Content C:\`$WINDOWS.~BT\Sources\Panther\setupact.log -Tail 60 -EA 0
-Get-WinEvent -LogName Setup -MaxEvents 25 -EA 0 |
-  Select-Object TimeCreated, Id, LevelDisplayName, Message | Format-List
+Get-MpThreat | Format-List ThreatName, SeverityID, Resources, IsActive
+
+Get-MpThreatDetection |
+  Select-Object -First 20 InitialDetectionTime, ThreatID, Resources |
+  Format-List
+
+Get-Content "C:\`$WINDOWS.~BT\Sources\Panther\setuperr.log" -Tail 30 -EA 0
