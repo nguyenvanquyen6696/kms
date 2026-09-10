@@ -1,8 +1,11 @@
-Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows Defender Security Center" -Recurse -EA 0 |
-  ForEach-Object { $p=$_; (Get-ItemProperty $_.PSPath).PSObject.Properties |
-    Where-Object { $_.Name -notlike 'PS*' } |
-    ForEach-Object { "$($p.PSChildName) : $($_.Name) = $($_.Value)" } }
+# Xóa key policy rỗng còn sót
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /f
 
-Get-ChildItem "HKCU:\SOFTWARE\Policies\Microsoft" -Recurse -EA 0 | Select-Object -Expand Name
-dir C:\Windows\System32\GroupPolicy, C:\Windows\System32\GroupPolicyUsers -Recurse -EA 0 | Select-Object FullName
-dir C:\Recovery\Customizations, C:\Windows\Provisioning\Packages -EA 0 | Select-Object FullName
+# Cài lại giao diện Windows Security
+Get-AppxPackage Microsoft.SecHealthUI -AllUsers | Reset-AppxPackage
+
+# Sửa file hệ thống hỏng
+DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow
+
+Chạy xong khởi động lại máy rồi mở lại Windows Security. Lệnh DISM chạy khoảng 5–15 phút, cứ để nó chạy hết.
