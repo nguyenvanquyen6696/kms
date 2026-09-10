@@ -1,16 +1,5 @@
-Write-Host "== Services:" -ForegroundColor Cyan
-Get-Service wuauserv,bits,cryptsvc,msiserver,UsoSvc,WaaSMedicSvc,TrustedInstaller -EA 0 |
-  Format-Table Name,Status,StartType -AutoSize
+Get-Service sppsvc,ClipSVC,LicenseManager,Winmgmt -EA 0 | Format-Table Name,Status,StartType -AutoSize
 
-Write-Host "== Policy chan Windows Update:" -ForegroundColor Cyan
-reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /s 2>$null
-if (-not $?) { "khong co" }
+winmgmt /verifyrepository
 
-Write-Host "== File hosts:" -ForegroundColor Cyan
-Get-Content C:\Windows\System32\drivers\etc\hosts |
-  Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() }
-if (-not (Get-Content C:\Windows\System32\drivers\etc\hosts | Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() })) { "sach" }
-
-Write-Host "== Kich hoat Windows:" -ForegroundColor Cyan
-(Get-CimInstance SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL AND Name LIKE 'Windows%'") |
-  Format-List Name,Description,LicenseStatus
+cscript //nologo C:\Windows\System32\slmgr.vbs /dli
