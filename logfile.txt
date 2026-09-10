@@ -1,11 +1,2 @@
-# Xóa key policy rỗng còn sót
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /f
-
-# Cài lại giao diện Windows Security
-Get-AppxPackage Microsoft.SecHealthUI -AllUsers | Reset-AppxPackage
-
-# Sửa file hệ thống hỏng
-DISM /Online /Cleanup-Image /RestoreHealth
-sfc /scannow
-
-Chạy xong khởi động lại máy rồi mở lại Windows Security. Lệnh DISM chạy khoảng 5–15 phút, cứ để nó chạy hết.
+$s = [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes("C:\Windows\System32\GroupPolicy\Machine\Registry.pol"))
+[regex]::Matches($s,'[\x20-\x7E]{4,}') | ForEach-Object { $_.Value }
