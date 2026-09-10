@@ -1,5 +1,4 @@
-Get-Service sppsvc,ClipSVC,LicenseManager,Winmgmt -EA 0 | Format-Table Name,Status,StartType -AutoSize
-
-winmgmt /verifyrepository
-
-cscript //nologo C:\Windows\System32\slmgr.vbs /dli
+sc.exe query sppsvc
+sc.exe qc sppsvc
+Test-Path C:\Windows\System32\sppsvc.exe
+net start sppsvc
