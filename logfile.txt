@@ -1,2 +1,16 @@
-$s = [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes("C:\Windows\System32\GroupPolicy\Machine\Registry.pol"))
-[regex]::Matches($s,'[\x20-\x7E]{4,}') | ForEach-Object { $_.Value }
+Write-Host "== Services:" -ForegroundColor Cyan
+Get-Service wuauserv,bits,cryptsvc,msiserver,UsoSvc,WaaSMedicSvc,TrustedInstaller -EA 0 |
+  Format-Table Name,Status,StartType -AutoSize
+
+Write-Host "== Policy chan Windows Update:" -ForegroundColor Cyan
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /s 2>$null
+if (-not $?) { "khong co" }
+
+Write-Host "== File hosts:" -ForegroundColor Cyan
+Get-Content C:\Windows\System32\drivers\etc\hosts |
+  Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() }
+if (-not (Get-Content C:\Windows\System32\drivers\etc\hosts | Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() })) { "sach" }
+
+Write-Host "== Kich hoat Windows:" -ForegroundColor Cyan
+(Get-CimInstance SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL AND Name LIKE 'Windows%'") |
+  Format-List Name,Description,LicenseStatus
