@@ -1,4 +1,25 @@
-reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "ProviderID"
+$paths = [ordered]@{
+  'A_Policies-Defender' = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender'
+  'B_Policies-WDSC'     = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center'
+  'C_MDM-Defender'      = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Defender'
+  'D_MDM-WDSC'          = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\WindowsDefenderSecurityCenter'
+}
+foreach ($n in $paths.Keys) {
+  if (Test-Path $paths[$n]) {
+    Write-Host "== $n : CO" -ForegroundColor Yellow
+    Get-ChildItem $paths[$n] -Recurse -EA 0 | ForEach-Object {
+      $v = Get-ItemProperty $_.PSPath
+      $v.PSObject.Properties | Where-Object { $_.Name -notlike 'PS*' } |
+        ForEach-Object { "   $($_.Name) = $($_.Value)" }
+    }
+    (Get-ItemProperty $paths[$n]).PSObject.Properties |
+      Where-Object { $_.Name -notlike 'PS*' } | ForEach-Object { "   $($_.Name) = $($_.Value)" }
+  } else { Write-Host "-- $n : khong co" -ForegroundColor DarkGray }
+}
+Write-Host "== AV dang cai:" -ForegroundColor Cyan
+Get-CimInstance -Namespace root\SecurityCenter2 -ClassName AntiVirusProduct | Select-Object -Expand displayName
+Write-Host "== Trang thai Defender:" -ForegroundColor Cyan
+Get-MpComputerStatus | Format-List AMServiceEnabled,RealTimeProtectionEnabled,AntivirusEnabled,IsTamperProtected,AMRunningModereg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "ProviderID"
 reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "EnrollmentState"
 reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "UPN"
 
