@@ -1,22 +1,9 @@
-Bước 1 — Chẩn đoán (chạy trên máy bị lỗi)
+reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "ProviderID"
+reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "EnrollmentState"
+reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "UPN"
 
-Mở PowerShell với quyền Administrator (Win + X → Terminal (Admin)) rồi chạy từng lệnh:
+dsregcmd /status | Select-String "AzureAdJoined|DomainJoined|TenantName|TenantId|MDMUrl|WorkplaceJoined"
 
-# 1. Máy có bị join vào tổ chức / Intune / Autopilot không?
-dsregcmd /status | Select-String "AzureAdJoined|DomainJoined|TenantName|MDMUrl"
-
-# 2. Có đăng ký MDM không?
-reg query "HKLM\SOFTWARE\Microsoft\Enrollments" /s /f "ProviderID" 2>$null
-
-# 3. Có policy chặn Defender không?
-reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /s
-reg query "HKLM\SOFTWARE\Microsoft\Windows Defender\Policy Manager" /s
-reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /s
-
-# 4. Có gói provisioning (.ppkg) tự chạy lại sau reset không?
-dir C:\Recovery\Customizations, C:\Windows\Provisioning\Packages
-
-# 5. Có phần mềm diệt virus bên thứ 3 đang chiếm chỗ không?
-Get-CimInstance -Namespace root\SecurityCenter2 -ClassName AntiVirusProduct | Select displayName
-
-Gửi lại kết quả cho tôi nếu bạn không chắc đọc thế nào.
+# Policy MDM áp lên Defender nằm ở đây:
+reg query "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Defender" /s
+reg query "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\WindowsDefenderSecurityCenter" /s
